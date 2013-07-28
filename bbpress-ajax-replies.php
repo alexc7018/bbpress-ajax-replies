@@ -1,6 +1,6 @@
 <?php
 /*
- * Plugin Name: bbPress AJAX Replies
+ * Plugin Name: bbPress Ajax Replies
  * Plugin URI:  http://wordpress.org/plugins/bbpress-ajax-replies/
  * Description: Gives topic replies in bbPress more ajaxy goodness.
  * Author:      Alison Barrett
