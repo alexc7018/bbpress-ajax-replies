@@ -22,8 +22,9 @@ class bbPress_Ajax_Replies {
 	}
 
 	private function setup_actions() {
-		add_action( 'bbp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-		add_action( 'bbp_ajax_reply',      array( $this, 'ajax_reply'      ) );
+		add_action( 'bbp_enqueue_scripts', array( $this, 'enqueue_scripts'            ) );
+		add_action( 'bbp_enqueue_scripts', array( $this, 'localize_reply_ajax_script' ) );
+		add_action( 'bbp_ajax_reply',      array( $this, 'ajax_reply'                 ) );
 	}
 
 	public function enqueue_scripts() {
@@ -32,8 +33,7 @@ class bbPress_Ajax_Replies {
 		}
 	}
 
-	public function localize_topic_script() {
-
+	public function localize_reply_ajax_script() {
 		// Bail if not viewing a single topic
 		if ( !bbp_is_single_topic() )
 			return;
@@ -42,7 +42,7 @@ class bbPress_Ajax_Replies {
 			'bbp_ajaxurl'        => bbp_get_ajax_url(),
 			'generic_ajax_error' => __( 'Something went wrong. Refresh your browser and try again.', 'bbpress' ),
 			'is_user_logged_in'  => is_user_logged_in(),
-			'reply_nonce'        => wp_create_nonce( 'toggle-favorite_' .     get_the_ID() )
+			'reply_nonce'        => wp_create_nonce( 'reply-ajax_' .     get_the_ID() )
 		) );
 	}
 
