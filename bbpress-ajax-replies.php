@@ -25,6 +25,8 @@ class bbPress_Ajax_Replies {
 		add_action( 'bbp_enqueue_scripts', array( $this, 'enqueue_scripts'            ) );
 		add_action( 'bbp_enqueue_scripts', array( $this, 'localize_reply_ajax_script' ) );
 		add_action( 'bbp_ajax_reply',      array( $this, 'ajax_reply'                 ) );
+		add_action( 'bbp_new_reply_post_extras', array( $this, 'reply_post_extras' ), 99 );
+		add_action( 'bbp_edit_reply_post_extras', array( $this, 'reply_post_extras' ), 99 );
 	}
 
 	public function enqueue_scripts() {
@@ -47,7 +49,29 @@ class bbPress_Ajax_Replies {
 	}
 
 	public function ajax_reply() {
+		$action = $_POST['bbp_reply_form_action'];
+		if ( 'bbp-new-reply' == $action ) {
+			bbp_new_reply_handler( $action );
+		} elseif ( 'bbp-edit-reply' == $action ) {
+			bbp_edit_reply_handler( $action );
+		}
+	}
 
+	public function reply_post_extras( $reply_id ) {
+		if ( ! bbp_is_ajax() ) {
+			return;
+		}
+
+		ob_start();
+		$reply_query = new WP_Query( array( 'p' => (int) $reply_id, 'post_type' => bbp_get_reply_post_type() ) );
+		$bbp = bbpress();
+		$bbp->reply_query = $reply_query;
+		while ( bbp_replies() ) : bbp_the_reply();
+			bbp_get_template_part( 'loop', 'single-reply' );
+		endwhile;
+		$reply_html = ob_get_clean();
+
+		bbp_ajax_response( true, $reply_html );
 	}
 
 }
