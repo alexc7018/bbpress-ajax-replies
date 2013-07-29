@@ -18,7 +18,8 @@ jQuery(function($) {
 				var reply_list_item = '<li>' + response.content + '</li>';
 
 				if ( 'edit' == response.reply_type ) {
-
+					// in-place editing doesn't work yet, but could (and should) eventually
+					$('#post-' + response.reply_id).parent('li').replaceWith(reply_list_item);
 				} else {
 					if ( response.reply_parent && response.reply_parent != response.reply_id ) {
 						// threaded comment
