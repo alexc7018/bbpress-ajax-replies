@@ -10,8 +10,14 @@
 
 class bbPress_Ajax_Replies {
 
+	/**
+	 * @var string
+	 */
 	private $url;
 
+	/**
+	 * Constructor
+	 */
 	function __construct() {
 		$this->setup_globals();
 		$this->setup_actions();
@@ -21,6 +27,12 @@ class bbPress_Ajax_Replies {
 		$this->url = trailingslashit( plugins_url( basename( __DIR__ ) ) );
 	}
 
+	/**
+	 * Set up bbpress hooks
+	 *
+	 * Using bbPress sub-actions to avoid plugin loading without bbPress
+	 * being activated
+	 */
 	private function setup_actions() {
 		add_action( 'bbp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'bbp_enqueue_scripts', array( $this, 'localize_reply_ajax_script' ) );
@@ -48,6 +60,13 @@ class bbPress_Ajax_Replies {
 		) );
 	}
 
+	/**
+	 * Ajax handler for reply submissions
+	 *
+	 * This is attached to the appropriate bbPress ajax hooks, so it is fired
+	 * on any bbPress ajax submissions with the 'action' parameter set to
+	 * 'reply'
+	 */
 	public function ajax_reply() {
 		$action = $_POST['bbp_reply_form_action'];
 		if ( 'bbp-new-reply' == $action ) {
@@ -57,6 +76,11 @@ class bbPress_Ajax_Replies {
 		}
 	}
 
+	/**
+	 * New replies
+	 *
+	 * @param $reply_id
+	 */
 	public function new_reply_post_extras( $reply_id ) {
 		if ( ! bbp_is_ajax() ) {
 			return;
@@ -65,6 +89,11 @@ class bbPress_Ajax_Replies {
 		$this->ajax_response( $reply_id, 'new' );
 	}
 
+	/**
+	 * Editing an existing reply
+	 *
+	 * @param $reply_id
+	 */
 	public function edit_reply_post_extras( $reply_id ) {
 		if ( ! bbp_is_ajax() ) {
 			return;
@@ -73,6 +102,14 @@ class bbPress_Ajax_Replies {
 		$this->ajax_response( $reply_id, 'edit' );
 	}
 
+	/**
+	 * Generate an ajax response
+	 *
+	 * Sends the HTML for the reply along with some extra information
+	 *
+	 * @param $reply_id
+	 * @param $type
+	 */
 	private function ajax_response( $reply_id, $type ) {
 
 		$reply_html = $this->get_reply_html( $reply_id );
@@ -84,6 +121,12 @@ class bbPress_Ajax_Replies {
 		bbp_ajax_response( true, $reply_html, null, $extra_info );
 	}
 
+	/**
+	 * Uses a bbPress template file to generate reply HTML
+	 *
+	 * @param $reply_id
+	 * @return string
+	 */
 	private function get_reply_html( $reply_id ) {
 		ob_start();
 		$reply_query = new WP_Query( array( 'p' => (int) $reply_id, 'post_type' => bbp_get_reply_post_type() ) );
