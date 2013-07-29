@@ -52,8 +52,8 @@ jQuery(function($) {
 	}
 
 	function reset_reply_form() {
-		$('.bbp-reply-form, #bbp-temp-form-div').remove();
-		$('.bbp-pagination').after(bbpReplyAjaxJS.reply_form_html);
+		$('#bbp-cancel-reply-to-link').trigger('click');
+		$('#bbp_reply_content').val('');
 	}
 
 	$( '.bbp-reply-form form' ).on( "submit", function( e ) {
