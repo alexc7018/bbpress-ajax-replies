@@ -24,7 +24,6 @@ jQuery(function($) {
 					if ( response.reply_parent && response.reply_parent != response.reply_id ) {
 						// threaded comment
 						var $parent = $('#post-' + response.reply_parent).parent('li');
-						console.log(response, $parent);
 						var list_type = 'ul';
 						if ( $('.bbp-replies').is('ol') ) {
 							list_type = 'ol';
