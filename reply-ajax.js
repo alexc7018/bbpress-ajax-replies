@@ -37,6 +37,10 @@ jQuery(function($) {
 					}
 				}
 				reset_reply_form();
+				var $new_element = $('.post-' + response.reply_id);
+				$new_element.removeClass('odd').addClass('even');
+				var orig_color = $new_element.css('backgroundColor');
+				$new_element.css('backgroundColor', 'lightYellow').animate({backgroundColor: orig_color}, 2000);
 			} else {
 				console.log(response);
 				if ( !response.content ) {
