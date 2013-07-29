@@ -53,7 +53,8 @@ jQuery(function($) {
 	}
 
 	function reset_reply_form() {
-
+		$('.bbp-reply-form, #bbp-temp-form-div').remove();
+		$('.bbp-pagination').after(bbpReplyAjaxJS.reply_form_html);
 	}
 
 	$( '.bbp-reply-form form' ).submit( function( e ) {

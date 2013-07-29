@@ -52,11 +52,17 @@ class bbPress_Ajax_Replies {
 		if ( ! bbp_is_single_topic() )
 			return;
 
+		ob_start();
+		bbp_get_template_part( 'form', 'reply' );
+		$reply_form_html = ob_get_clean();
+
 		wp_localize_script( 'bbpress-reply-ajax', 'bbpReplyAjaxJS', array(
 			'bbp_ajaxurl'        => bbp_get_ajax_url(),
 			'generic_ajax_error' => __( 'Something went wrong. Refresh your browser and try again.', 'bbpress' ),
 			'is_user_logged_in'  => is_user_logged_in(),
-			'reply_nonce'        => wp_create_nonce( 'reply-ajax_' . get_the_ID() )
+			'reply_nonce'        => wp_create_nonce( 'reply-ajax_' . get_the_ID() ),
+			'topic_id'           => bbp_get_topic_id(),
+			'reply_form_html'    => $reply_form_html,
 		) );
 	}
 
