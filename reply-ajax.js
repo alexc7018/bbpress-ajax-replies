@@ -56,7 +56,7 @@ jQuery(function($) {
 		$('.bbp-pagination').after(bbpReplyAjaxJS.reply_form_html);
 	}
 
-	$( '.bbp-reply-form form' ).submit( function( e ) {
+	$( '.bbp-reply-form form' ).on( "submit", function( e ) {
 		e.preventDefault();
 		bbp_reply_ajax_call( 'reply', bbpReplyAjaxJS.reply_nonce, $(this).serializeArray() );
 	} );
