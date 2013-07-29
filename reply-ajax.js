@@ -15,7 +15,28 @@ jQuery(function($) {
 
 		$.post( bbpReplyAjaxJS.bbp_ajaxurl, $data, function ( response ) {
 			if ( response.success ) {
-				$('.bbp-footer').before( '<li>' + response.content + '</li>' );
+				var reply_list_item = '<li>' + response.content + '</li>';
+
+				if ( 'edit' == response.reply_type ) {
+
+				} else {
+					if ( response.reply_parent && response.reply_parent != response.reply_id ) {
+						// threaded comment
+						var $parent = $('#post-' + response.reply_parent).parent('li');
+						console.log(response, $parent);
+						var list_type = 'ul';
+						if ( $('.bbp-replies').is('ol') ) {
+							list_type = 'ol';
+						}
+						if ( 0 == $parent.next(list_type).length ) {
+							$parent.after('<' + list_type + ' class="bbp-threaded-replies"></' + list_type + '>');
+						}
+						$parent.next(list_type).append(reply_list_item)
+					} else {
+						$('.bbp-footer').before(reply_list_item);
+					}
+				}
+				reset_reply_form();
 			} else {
 				console.log(response);
 				if ( !response.content ) {
@@ -24,6 +45,10 @@ jQuery(function($) {
 				alert( response.content );
 			}
 		} );
+	}
+
+	function reset_reply_form() {
+
 	}
 
 	$( '.bbp-reply-form form' ).submit( function( e ) {

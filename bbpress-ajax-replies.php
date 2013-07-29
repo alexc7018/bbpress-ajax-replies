@@ -43,7 +43,7 @@ class bbPress_Ajax_Replies {
 
 	public function enqueue_scripts() {
 		if ( bbp_is_single_topic() ) {
-			wp_enqueue_script( 'bbpress-reply-ajax', $this->url . 'reply-ajax.js', array( 'bbpress-topic', 'bbpress-reply', 'jquery' ) );
+			wp_enqueue_script( 'bbpress-reply-ajax', $this->url . 'reply-ajax.js', array( 'bbpress-topic', 'bbpress-reply', 'jquery', 'jquery-color' ) );
 		}
 	}
 
@@ -116,7 +116,7 @@ class bbPress_Ajax_Replies {
 		$extra_info = array(
 			'reply_id'     => $reply_id,
 			'reply_type'   => $type,
-			'reply_parent' => bbp_get_reply_ancestor_id( $reply_id ),
+			'reply_parent' => (int) $_REQUEST['bbp_reply_to'],
 		);
 		bbp_ajax_response( true, $reply_html, null, $extra_info );
 	}
