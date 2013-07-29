@@ -22,11 +22,11 @@ class bbPress_Ajax_Replies {
 	}
 
 	private function setup_actions() {
-		add_action( 'bbp_enqueue_scripts', array( $this, 'enqueue_scripts'            ) );
+		add_action( 'bbp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'bbp_enqueue_scripts', array( $this, 'localize_reply_ajax_script' ) );
-		add_action( 'bbp_ajax_reply',      array( $this, 'ajax_reply'                 ) );
-		add_action( 'bbp_new_reply_post_extras', array( $this, 'reply_post_extras' ), 99 );
-		add_action( 'bbp_edit_reply_post_extras', array( $this, 'reply_post_extras' ), 99 );
+		add_action( 'bbp_ajax_reply', array( $this, 'ajax_reply' ) );
+		add_action( 'bbp_new_reply_post_extras', array( $this, 'new_reply_post_extras' ), 99 );
+		add_action( 'bbp_edit_reply_post_extras', array( $this, 'edit_reply_post_extras' ), 99 );
 	}
 
 	public function enqueue_scripts() {
@@ -37,14 +37,14 @@ class bbPress_Ajax_Replies {
 
 	public function localize_reply_ajax_script() {
 		// Bail if not viewing a single topic
-		if ( !bbp_is_single_topic() )
+		if ( ! bbp_is_single_topic() )
 			return;
 
 		wp_localize_script( 'bbpress-reply-ajax', 'bbpReplyAjaxJS', array(
 			'bbp_ajaxurl'        => bbp_get_ajax_url(),
 			'generic_ajax_error' => __( 'Something went wrong. Refresh your browser and try again.', 'bbpress' ),
 			'is_user_logged_in'  => is_user_logged_in(),
-			'reply_nonce'        => wp_create_nonce( 'reply-ajax_' .     get_the_ID() )
+			'reply_nonce'        => wp_create_nonce( 'reply-ajax_' . get_the_ID() )
 		) );
 	}
 
@@ -57,21 +57,44 @@ class bbPress_Ajax_Replies {
 		}
 	}
 
-	public function reply_post_extras( $reply_id ) {
+	public function new_reply_post_extras( $reply_id ) {
 		if ( ! bbp_is_ajax() ) {
 			return;
 		}
 
+		$this->ajax_response( $reply_id, 'new' );
+	}
+
+	public function edit_reply_post_extras( $reply_id ) {
+		if ( ! bbp_is_ajax() ) {
+			return;
+		}
+
+		$this->ajax_response( $reply_id, 'edit' );
+	}
+
+	private function ajax_response( $reply_id, $type ) {
+
+		$reply_html = $this->get_reply_html( $reply_id );
+		$extra_info = array(
+			'reply_id'     => $reply_id,
+			'reply_type'   => $type,
+			'reply_parent' => bbp_get_reply_ancestor_id( $reply_id ),
+		);
+		bbp_ajax_response( true, $reply_html, null, $extra_info );
+	}
+
+	private function get_reply_html( $reply_id ) {
 		ob_start();
 		$reply_query = new WP_Query( array( 'p' => (int) $reply_id, 'post_type' => bbp_get_reply_post_type() ) );
-		$bbp = bbpress();
+		$bbp              = bbpress();
 		$bbp->reply_query = $reply_query;
 		while ( bbp_replies() ) : bbp_the_reply();
 			bbp_get_template_part( 'loop', 'single-reply' );
 		endwhile;
 		$reply_html = ob_get_clean();
 
-		bbp_ajax_response( true, $reply_html );
+		return $reply_html;
 	}
 
 }
