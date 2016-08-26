@@ -42,14 +42,14 @@ class bbPress_Ajax_Replies {
 	}
 
 	public function enqueue_scripts() {
-		if ( bbp_is_single_topic() ) {
+		if ( bbp_is_single_topic() || apply_filters('is_embedded_single_topic',false)) {
 			wp_enqueue_script( 'bbpress-reply-ajax', $this->url . 'reply-ajax.js', array( 'bbpress-topic', 'bbpress-reply', 'jquery', 'jquery-color' ) );
 		}
 	}
 
 	public function localize_reply_ajax_script() {
 		// Bail if not viewing a single topic
-		if ( ! bbp_is_single_topic() )
+		if ( ! (bbp_is_single_topic() || apply_filters('is_embedded_single_topic',false) ) )
 			return;
 
 		ob_start();
